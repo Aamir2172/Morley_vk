@@ -1,0 +1,108 @@
+// AUTO-GENERATED — SAFE AT ORIGIN USING TERNIARY OPERATOR
+
+func real ue(real t)
+{
+  return (sin(2*t*pi)^2*sin(x*pi)^2*sin(y*pi)^2)/100;
+}
+
+func real uex(real t)
+{
+  return (pi*cos(x*pi)*sin(2*t*pi)^2*sin(x*pi)*sin(y*pi)^2)/50;
+}
+
+func real uey(real t)
+{
+  return (pi*cos(y*pi)*sin(2*t*pi)^2*sin(x*pi)^2*sin(y*pi))/50;
+}
+
+func real uexx(real t)
+{
+  return (pi^2*cos(x*pi)^2*sin(2*t*pi)^2*sin(y*pi)^2)/50 - (pi^2*sin(2*t*pi)^2*sin(x*pi)^2*sin(y*pi)^2)/50;
+}
+
+func real uexy(real t)
+{
+  return (pi^2*cos(x*pi)*cos(y*pi)*sin(2*t*pi)^2*sin(x*pi)*sin(y*pi))/25;
+}
+
+func real ueyy(real t)
+{
+  return (pi^2*cos(y*pi)^2*sin(2*t*pi)^2*sin(x*pi)^2)/50 - (pi^2*sin(2*t*pi)^2*sin(x*pi)^2*sin(y*pi)^2)/50;
+}
+
+func real ve(real t)
+{
+  return x^2*y^2*exp(t)*(x - 1)^2*(y - 1)^2;
+}
+
+func real vex(real t)
+{
+  return x^2*y^2*exp(t)*(2*x - 2)*(y - 1)^2 + 2*x*y^2*exp(t)*(x - 1)^2*(y - 1)^2;
+}
+
+func real vey(real t)
+{
+  return x^2*y^2*exp(t)*(2*y - 2)*(x - 1)^2 + 2*x^2*y*exp(t)*(x - 1)^2*(y - 1)^2;
+}
+
+func real vexx(real t)
+{
+  return 2*x^2*y^2*exp(t)*(y - 1)^2 + 2*y^2*exp(t)*(x - 1)^2*(y - 1)^2 + 4*x*y^2*exp(t)*(2*x - 2)*(y - 1)^2;
+}
+
+func real vexy(real t)
+{
+  return x^2*y^2*exp(t)*(2*x - 2)*(2*y - 2) + 4*x*y*exp(t)*(x - 1)^2*(y - 1)^2 + 2*x*y^2*exp(t)*(2*y - 2)*(x - 1)^2 + 2*x^2*y*exp(t)*(2*x - 2)*(y - 1)^2;
+}
+
+func real veyy(real t)
+{
+  return 2*x^2*y^2*exp(t)*(x - 1)^2 + 2*x^2*exp(t)*(x - 1)^2*(y - 1)^2 + 4*x^2*y*exp(t)*(2*y - 2)*(x - 1)^2;
+}
+
+func real F(real t)
+{
+  return (2*pi^4*cos(x*pi)^2*cos(y*pi)^2*sin(2*t*pi)^2)/25 - ((pi^2*cos(y*pi)^2*sin(2*t*pi)^2*sin(x*pi)^2)/50 - (pi^2*sin(2*t*pi)^2*sin(x*pi)^2*sin(y*pi)^2)/50)*(2*x^2*y^2*exp(t)*(y - 1)^2 + 2*y^2*exp(t)*(x - 1)^2*(y - 1)^2 + 4*x*y^2*exp(t)*(2*x - 2)*(y - 1)^2) - ((pi^2*cos(x*pi)^2*sin(2*t*pi)^2*sin(y*pi)^2)/50 - (pi^2*sin(2*t*pi)^2*sin(x*pi)^2*sin(y*pi)^2)/50)*(2*x^2*y^2*exp(t)*(x - 1)^2 + 2*x^2*exp(t)*(x - 1)^2*(y - 1)^2 + 4*x^2*y*exp(t)*(2*y - 2)*(x - 1)^2) + (2*pi^2*cos(2*t*pi)^2*sin(x*pi)^2*sin(y*pi)^2)/25 - (4*pi^4*cos(x*pi)^2*sin(2*t*pi)^2*sin(y*pi)^2)/25 - (4*pi^4*cos(y*pi)^2*sin(2*t*pi)^2*sin(x*pi)^2)/25 - (2*pi^2*sin(2*t*pi)^2*sin(x*pi)^2*sin(y*pi)^2)/25 + (6*pi^4*sin(2*t*pi)^2*sin(x*pi)^2*sin(y*pi)^2)/25 + (2*pi^2*cos(x*pi)*cos(y*pi)*sin(2*t*pi)^2*sin(x*pi)*sin(y*pi)*(x^2*y^2*exp(t)*(2*x - 2)*(2*y - 2) + 4*x*y*exp(t)*(x - 1)^2*(y - 1)^2 + 2*x*y^2*exp(t)*(2*y - 2)*(x - 1)^2 + 2*x^2*y*exp(t)*(2*x - 2)*(y - 1)^2))/25;
+}
+
+func real Fx(real t)
+{
+  return (4*pi^3*cos(2*t*pi)^2*cos(x*pi)*sin(x*pi)*sin(y*pi)^2)/25 - ((pi^2*cos(y*pi)^2*sin(2*t*pi)^2*sin(x*pi)^2)/50 - (pi^2*sin(2*t*pi)^2*sin(x*pi)^2*sin(y*pi)^2)/50)*(6*y^2*exp(t)*(2*x - 2)*(y - 1)^2 + 12*x*y^2*exp(t)*(y - 1)^2) - ((pi^3*cos(x*pi)*cos(y*pi)^2*sin(2*t*pi)^2*sin(x*pi))/25 - (pi^3*cos(x*pi)*sin(2*t*pi)^2*sin(x*pi)*sin(y*pi)^2)/25)*(2*x^2*y^2*exp(t)*(y - 1)^2 + 2*y^2*exp(t)*(x - 1)^2*(y - 1)^2 + 4*x*y^2*exp(t)*(2*x - 2)*(y - 1)^2) - ((pi^2*cos(x*pi)^2*sin(2*t*pi)^2*sin(y*pi)^2)/50 - (pi^2*sin(2*t*pi)^2*sin(x*pi)^2*sin(y*pi)^2)/50)*(2*x^2*y^2*exp(t)*(2*x - 2) + 4*x*exp(t)*(x - 1)^2*(y - 1)^2 + 2*x^2*exp(t)*(2*x - 2)*(y - 1)^2 + 4*x*y^2*exp(t)*(x - 1)^2 + 8*x*y*exp(t)*(2*y - 2)*(x - 1)^2 + 4*x^2*y*exp(t)*(2*x - 2)*(2*y - 2)) - (12*pi^5*cos(x*pi)*cos(y*pi)^2*sin(2*t*pi)^2*sin(x*pi))/25 - (4*pi^3*cos(x*pi)*sin(2*t*pi)^2*sin(x*pi)*sin(y*pi)^2)/25 + (4*pi^5*cos(x*pi)*sin(2*t*pi)^2*sin(x*pi)*sin(y*pi)^2)/5 + (2*pi^3*cos(x*pi)*sin(2*t*pi)^2*sin(x*pi)*sin(y*pi)^2*(2*x^2*y^2*exp(t)*(x - 1)^2 + 2*x^2*exp(t)*(x - 1)^2*(y - 1)^2 + 4*x^2*y*exp(t)*(2*y - 2)*(x - 1)^2))/25 + (2*pi^3*cos(x*pi)^2*cos(y*pi)*sin(2*t*pi)^2*sin(y*pi)*(x^2*y^2*exp(t)*(2*x - 2)*(2*y - 2) + 4*x*y*exp(t)*(x - 1)^2*(y - 1)^2 + 2*x*y^2*exp(t)*(2*y - 2)*(x - 1)^2 + 2*x^2*y*exp(t)*(2*x - 2)*(y - 1)^2))/25 - (2*pi^3*cos(y*pi)*sin(2*t*pi)^2*sin(x*pi)^2*sin(y*pi)*(x^2*y^2*exp(t)*(2*x - 2)*(2*y - 2) + 4*x*y*exp(t)*(x - 1)^2*(y - 1)^2 + 2*x*y^2*exp(t)*(2*y - 2)*(x - 1)^2 + 2*x^2*y*exp(t)*(2*x - 2)*(y - 1)^2))/25 + (2*pi^2*cos(x*pi)*cos(y*pi)*sin(2*t*pi)^2*sin(x*pi)*sin(y*pi)*(2*x^2*y^2*exp(t)*(2*y - 2) + 4*y*exp(t)*(x - 1)^2*(y - 1)^2 + 2*y^2*exp(t)*(2*y - 2)*(x - 1)^2 + 4*x^2*y*exp(t)*(y - 1)^2 + 8*x*y*exp(t)*(2*x - 2)*(y - 1)^2 + 4*x*y^2*exp(t)*(2*x - 2)*(2*y - 2)))/25;
+}
+
+func real Fy(real t)
+{
+  return (4*pi^3*cos(2*t*pi)^2*cos(y*pi)*sin(x*pi)^2*sin(y*pi))/25 - ((pi^2*cos(x*pi)^2*sin(2*t*pi)^2*sin(y*pi)^2)/50 - (pi^2*sin(2*t*pi)^2*sin(x*pi)^2*sin(y*pi)^2)/50)*(6*x^2*exp(t)*(2*y - 2)*(x - 1)^2 + 12*x^2*y*exp(t)*(x - 1)^2) - ((pi^3*cos(x*pi)^2*cos(y*pi)*sin(2*t*pi)^2*sin(y*pi))/25 - (pi^3*cos(y*pi)*sin(2*t*pi)^2*sin(x*pi)^2*sin(y*pi))/25)*(2*x^2*y^2*exp(t)*(x - 1)^2 + 2*x^2*exp(t)*(x - 1)^2*(y - 1)^2 + 4*x^2*y*exp(t)*(2*y - 2)*(x - 1)^2) - ((pi^2*cos(y*pi)^2*sin(2*t*pi)^2*sin(x*pi)^2)/50 - (pi^2*sin(2*t*pi)^2*sin(x*pi)^2*sin(y*pi)^2)/50)*(2*x^2*y^2*exp(t)*(2*y - 2) + 4*y*exp(t)*(x - 1)^2*(y - 1)^2 + 2*y^2*exp(t)*(2*y - 2)*(x - 1)^2 + 4*x^2*y*exp(t)*(y - 1)^2 + 8*x*y*exp(t)*(2*x - 2)*(y - 1)^2 + 4*x*y^2*exp(t)*(2*x - 2)*(2*y - 2)) - (12*pi^5*cos(x*pi)^2*cos(y*pi)*sin(2*t*pi)^2*sin(y*pi))/25 - (4*pi^3*cos(y*pi)*sin(2*t*pi)^2*sin(x*pi)^2*sin(y*pi))/25 + (4*pi^5*cos(y*pi)*sin(2*t*pi)^2*sin(x*pi)^2*sin(y*pi))/5 + (2*pi^3*cos(y*pi)*sin(2*t*pi)^2*sin(x*pi)^2*sin(y*pi)*(2*x^2*y^2*exp(t)*(y - 1)^2 + 2*y^2*exp(t)*(x - 1)^2*(y - 1)^2 + 4*x*y^2*exp(t)*(2*x - 2)*(y - 1)^2))/25 + (2*pi^3*cos(x*pi)*cos(y*pi)^2*sin(2*t*pi)^2*sin(x*pi)*(x^2*y^2*exp(t)*(2*x - 2)*(2*y - 2) + 4*x*y*exp(t)*(x - 1)^2*(y - 1)^2 + 2*x*y^2*exp(t)*(2*y - 2)*(x - 1)^2 + 2*x^2*y*exp(t)*(2*x - 2)*(y - 1)^2))/25 - (2*pi^3*cos(x*pi)*sin(2*t*pi)^2*sin(x*pi)*sin(y*pi)^2*(x^2*y^2*exp(t)*(2*x - 2)*(2*y - 2) + 4*x*y*exp(t)*(x - 1)^2*(y - 1)^2 + 2*x*y^2*exp(t)*(2*y - 2)*(x - 1)^2 + 2*x^2*y*exp(t)*(2*x - 2)*(y - 1)^2))/25 + (2*pi^2*cos(x*pi)*cos(y*pi)*sin(2*t*pi)^2*sin(x*pi)*sin(y*pi)*(2*x^2*y^2*exp(t)*(2*x - 2) + 4*x*exp(t)*(x - 1)^2*(y - 1)^2 + 2*x^2*exp(t)*(2*x - 2)*(y - 1)^2 + 4*x*y^2*exp(t)*(x - 1)^2 + 8*x*y*exp(t)*(2*y - 2)*(x - 1)^2 + 4*x^2*y*exp(t)*(2*x - 2)*(2*y - 2)))/25;
+}
+
+func real G(real t)
+{
+  return ((pi^2*cos(x*pi)^2*sin(2*t*pi)^2*sin(y*pi)^2)/50 - (pi^2*sin(2*t*pi)^2*sin(x*pi)^2*sin(y*pi)^2)/50)*((pi^2*cos(y*pi)^2*sin(2*t*pi)^2*sin(x*pi)^2)/50 - (pi^2*sin(2*t*pi)^2*sin(x*pi)^2*sin(y*pi)^2)/50) + 24*x^2*exp(t)*(x - 1)^2 + 8*x^2*exp(t)*(y - 1)^2 + 8*y^2*exp(t)*(x - 1)^2 + 24*y^2*exp(t)*(y - 1)^2 + 8*exp(t)*(x - 1)^2*(y - 1)^2 + 8*x^2*y^2*exp(t) + 16*x*exp(t)*(2*x - 2)*(y - 1)^2 + 16*y*exp(t)*(2*y - 2)*(x - 1)^2 + 16*x*y^2*exp(t)*(2*x - 2) + 16*x^2*y*exp(t)*(2*y - 2) + 32*x*y*exp(t)*(2*x - 2)*(2*y - 2) - (pi^4*cos(x*pi)^2*cos(y*pi)^2*sin(2*t*pi)^4*sin(x*pi)^2*sin(y*pi)^2)/625;
+}
+
+func real Gx(real t)
+{
+  return ((pi^2*cos(x*pi)^2*sin(2*t*pi)^2*sin(y*pi)^2)/50 - (pi^2*sin(2*t*pi)^2*sin(x*pi)^2*sin(y*pi)^2)/50)*((pi^3*cos(x*pi)*cos(y*pi)^2*sin(2*t*pi)^2*sin(x*pi))/25 - (pi^3*cos(x*pi)*sin(2*t*pi)^2*sin(x*pi)*sin(y*pi)^2)/25) + 24*x^2*exp(t)*(2*x - 2) + 24*y^2*exp(t)*(2*x - 2) + 48*x*y^2*exp(t) + 24*exp(t)*(2*x - 2)*(y - 1)^2 + 48*x*exp(t)*(x - 1)^2 + 48*x*exp(t)*(y - 1)^2 + 48*y*exp(t)*(2*x - 2)*(2*y - 2) + 96*x*y*exp(t)*(2*y - 2) - (2*pi^3*cos(x*pi)*sin(2*t*pi)^2*sin(x*pi)*sin(y*pi)^2*((pi^2*cos(y*pi)^2*sin(2*t*pi)^2*sin(x*pi)^2)/50 - (pi^2*sin(2*t*pi)^2*sin(x*pi)^2*sin(y*pi)^2)/50))/25 + (2*pi^5*cos(x*pi)*cos(y*pi)^2*sin(2*t*pi)^4*sin(x*pi)^3*sin(y*pi)^2)/625 - (2*pi^5*cos(x*pi)^3*cos(y*pi)^2*sin(2*t*pi)^4*sin(x*pi)*sin(y*pi)^2)/625;
+}
+
+func real Gy(real t)
+{
+  return ((pi^2*cos(y*pi)^2*sin(2*t*pi)^2*sin(x*pi)^2)/50 - (pi^2*sin(2*t*pi)^2*sin(x*pi)^2*sin(y*pi)^2)/50)*((pi^3*cos(x*pi)^2*cos(y*pi)*sin(2*t*pi)^2*sin(y*pi))/25 - (pi^3*cos(y*pi)*sin(2*t*pi)^2*sin(x*pi)^2*sin(y*pi))/25) + 24*x^2*exp(t)*(2*y - 2) + 24*y^2*exp(t)*(2*y - 2) + 48*x^2*y*exp(t) + 24*exp(t)*(2*y - 2)*(x - 1)^2 + 48*y*exp(t)*(x - 1)^2 + 48*y*exp(t)*(y - 1)^2 + 48*x*exp(t)*(2*x - 2)*(2*y - 2) + 96*x*y*exp(t)*(2*x - 2) - (2*pi^3*cos(y*pi)*sin(2*t*pi)^2*sin(x*pi)^2*sin(y*pi)*((pi^2*cos(x*pi)^2*sin(2*t*pi)^2*sin(y*pi)^2)/50 - (pi^2*sin(2*t*pi)^2*sin(x*pi)^2*sin(y*pi)^2)/50))/25 + (2*pi^5*cos(x*pi)^2*cos(y*pi)*sin(2*t*pi)^4*sin(x*pi)^2*sin(y*pi)^3)/625 - (2*pi^5*cos(x*pi)^2*cos(y*pi)^3*sin(2*t*pi)^4*sin(x*pi)^2*sin(y*pi))/625;
+}
+
+func real ues(real t)
+{
+  return (pi*cos(2*t*pi)*sin(2*t*pi)*sin(x*pi)^2*sin(y*pi)^2)/25;
+}
+
+func real uesx(real t)
+{
+  return (2*pi^2*cos(2*t*pi)*cos(x*pi)*sin(2*t*pi)*sin(x*pi)*sin(y*pi)^2)/25;
+}
+
+func real uesy(real t)
+{
+  return (2*pi^2*cos(2*t*pi)*cos(y*pi)*sin(2*t*pi)*sin(x*pi)^2*sin(y*pi))/25;
+}
+
+
