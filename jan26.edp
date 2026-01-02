@@ -1,0 +1,239 @@
+load "Morley"
+verbosity=0.0; 
+load "iovtk"
+macro bilaplacian(u, v)(dxx(u)*dxx(v) + dyy(u)*dyy(v) + 2.0*dxy(u)*dxy(v) )//
+macro vkm(u,v)( dxx(u)*dyy(v) + dyy(u)*dxx(v) - 2.0*dxy(u)*dxy(v) )//
+real pp=pi;
+int p=7;
+
+real T=1;   
+real[int] l2error(p), l2order(p), Energyerror(p),Energyorder(p),l2errorv(p), l2orderv(p), Energyerrorv(p),Energyorderv(p),hh(p);/////////////////////////////////////////////////
+for(int j=0;j<p;j++){
+int M=2^(j+1);
+mesh Th =square(M, M);
+plot(Th, wait=true);
+cout << "==================================================================================================================" << endl;
+cout << "Space Discretization Steps=" << j<<endl;
+cout << "==================================================================================================================" << endl;
+
+//real s;
+//s=(sqrt(2)/(M));
+fespace Vh(Th,P2Morley); // The Morley FES
+include "forcing6.edp"
+fespace Vh1(Th,P0);
+Vh1 h=hTriangle;
+real dt=1./(4*M);//1./(2*M);//1./(2*M);//1./sqrt(2)*h;//sqrt(1)*1./M;
+real t=dt;
+Vh [u,ux,uy],[phi,phix,phiy],[v,vx,vy],[q,qx,qy];
+Vh [u0,u0x,u0y],[u1,u1x,u1y], [v0,v0x,v0y],[v1,v1x,v1y],[us0,us0x,us0y];    
+Vh [ff0,ff0x,ff0y],[ff1,ff1x,ff1y],[gg0,gg0x,gg0y],[gg1,gg1x,gg1y];
+
+[ff0,ff0x,ff0y]=[F(t-dt),Fx(t-dt),Fy(t-dt)];
+
+[ff1,ff1x,ff1y]=[F(t),Fx(t),Fy(t)];
+
+[gg0,gg0x,gg0y]=[G(t-dt),Gx(t-dt),Gy(t-dt)];
+[gg1,gg1x,gg1y]=[G(t),Gx(t),Gy(t)];
+
+[u0,u0x,u0y] =[ue(t-dt),uex(t-dt),uey(t-dt)];
+
+[us0,us0x,us0y]=[ues(t-dt),uesx(t-dt),uesy(t-dt)];
+//cout<<"u0   * = "<<u0(.5,.5)<<endl;
+
+Vh [w0,w0x,w0y],[z0,z0x,z0y];
+//problem(note that in our case v_0=-u0)
+solve var0 ([w0,w0x,w0y],[z0,z0x,z0y])=int2d(Th)(bilaplacian(w0, z0))+int2d(Th)(0.5*vkm(u0,u0)*z0-gg0*z0)
++ on(1,2,3,4,w0=0,w0x=0,w0y=0);
+var0;
+[v0,v0x,v0y] =[w0,w0x,w0y];
+// Newton loop
+int np;
+real err=0;
+real eps = 1e-7;
+real DBC1=0.;
+Vh [v1num,v1numx,v1numy],[u1num,u1numx,u1numy];
+Vh [uh01,uh01x,uh01y]=[DBC1,DBC1,DBC1],[vh01,vh01x,vh01y]=[DBC1,DBC1,DBC1];
+//initial guess [u1pr,u1prx,u1pry]=[0,0,0]; and [v1pr,v1prx,v1pry]=[0,0,0]
+Vh [u1pr,u1prx,u1pry]=[u0,u0x,u0y],[v1pr,v1prx,v1pry]=[v0,v0x,v0y] ;
+//Definie Newton Iterates as Trial Functions as
+Vh [u1N,u1Nx,u1Ny],[v1N,v1Nx,v1Ny];
+//Definie Test Functions as
+Vh [u1test,u1testx,u1testy],[v1test,v1testx,v1testy];
+    for (np = 0; np < 15; np++){   // start Newton loop
+//Define Weak formulation
+solve var1 ([u1N,u1Nx,u1Ny,v1N,v1Nx,v1Ny],[u1test,u1testx,u1testy,v1test,v1testx,v1testy])=
+            int2d(Th)(2./dt^2*u1N*u1test+0.5*bilaplacian(u1N,u1test)
+            -0.25*vkm(u1pr,u1test)*v1N-0.25*vkm(u1N,u1test)*v1pr-0.25*vkm(u1N,u1test)*v0-0.25*vkm(u0,u1test)*v1N)                                               
+	    +int2d(Th)(-0.25*vkm(u0,u1test)*v0-0.25*vkm(u1pr,u1test)*v1pr-2./dt^2*u0*u1test
+             +0.5*bilaplacian(u0, u1test)-2./dt*us0*u1test-0.5*ff0*u1test-0.5*ff1*u1test)//v0=-u0 because of exact sol
+             +int2d(Th)(bilaplacian(v1N,v1test)+vkm(u1pr,u1N)*v1test)
+             +int2d(Th)(-0.5*vkm(u1pr,u1pr)*v1test-gg1*v1test)
+             + on(1,2,3,4,u1N=0,u1Nx=0,u1Ny=0,v1N=0,v1Nx=0,v1Ny=0);
+ // Define the error
+ err =sqrt(int2d(Th)(2*(u1N-u1pr)^2+dt^2/2*((dxx(u1N)-dxx(u1pr))^2+(dyy(u1N)-dyy(u1pr))^2+2*(dxy(u1N)-dxy(u1pr))^2+(dxx(v1N)-dxx(v1pr))^2+(dyy(v1N)-dyy(v1N))^2+2*(dxy(v1N)-dxy(v1pr))^2)));// Terminate the loop by accepting the following
+        cout <<" Newton_initial = "  << np << " err_initial = " << err<< endl;
+        if(err < eps) break; //converge
+    //  if( np>3 && err > 10.) break; //blowup
+        [u1pr,u1prx,u1pry]=[u1N,u1Nx,u1Ny];
+        [v1pr,v1prx,v1pry]=[v1N,v1Nx,v1Ny];
+        [u1num,u1numx,u1numy]=[u1N,u1Nx,u1Ny];//save solution for next time steps
+        [v1num,v1numx,v1numy]=[v1N,v1Nx,v1Ny];//save solution for next time steps
+
+    }
+[u1,u1x,u1y] =[u1num,u1numx,u1numy];
+[v1,v1x,v1y] =[v1num,v1numx,v1numy];
+
+real err0=sqrt(int2d(Th)((ue(t)-u1)^2));//sqrt(int2d(Th)((ue(t)-u)^2));
+
+real err2=sqrt(int2d(Th)((0.5*(uexx(t)+uexx(t-dt))-0.5*(dxx(u1)+dxx(u0)))^2+(0.5*(ueyy(t)+ueyy(t-dt))-0.5*(dyy(u1)+dyy(u0)))^2+ 2.0*(0.5*(uexy(t)+uexy(t-dt))-0.5*(dxy(u1)+dxy(u0)))^2 ));
+real errv0=sqrt(int2d(Th)((ve(t)-v1)^2));//sqrt(int2d(Th)((ue(t)-u)^2));
+
+real errv2=sqrt(int2d(Th)((0.5*(vexx(t)+vexx(t-dt))-0.5*(dxx(v1)+dxx(v0)))^2+(0.5*(veyy(t)+veyy(t-dt))-0.5*(dyy(v1)+dyy(v0)))^2+ 2.0*(0.5*(vexy(t)+vexy(t-dt))-0.5*(dxy(v1)+dxy(v0)))^2 ));
+
+real E0=max(sqrt(int2d(Th)((ue(t-dt)-u0)^2)),err0);
+real E2=err2;//max(sqrt(int2d(Th)(((uexx(t-dt))-dxx(u0))^2+(ueyy(t-dt)-dyy(u0))^2+ 2.0*(uexy(t-dt)-dxy(u0))^2 )),err2);
+real Ev0=max(sqrt(int2d(Th)((ve(t-dt)-v0)^2)),errv0);
+real Ev2=errv2;//max(sqrt(int2d(Th)(((vexx(t-dt))-dxx(v0))^2+(veyy(t-dt)-dyy(v0))^2+ 2.0*(vexy(t-dt)-dxy(v0))^2 )),errv2);
+Vh [unum,unumx,unumy],[vnum,vnumx,vnumy];
+while(t<T){
+  real te = T - t;
+    if (t + dt > T) {
+       dt = te;
+        t = T;
+    } else {
+t=t+dt;} 
+cout << "==================================================================================================================" << endl;
+cout << "Time Discretization Steps=" << t<<endl;
+cout << "==================================================================================================================" << endl;
+Vh [f0,f0x,f0y],[f1,f1x,f1y],[f2,f2x,f2y],[g0,g0x,g0y],[g1,g1x,g1y],[g2,g2x,g2y];//,[ut0,ut0x,ut0y];
+
+[f0,f0x,f0y] = [F(t-2*dt),Fx(t-2*dt),Fy(t-2*dt)]; 
+[f1,f1x,f1y] = [F(t-dt),Fx(t-dt),Fy(t-dt)];      
+[f2,f2x,f2y] = [F(t),Fx(t),Fy(t)]; 
+[g0,g0x,g0y] = [G(t-2*dt),Gx(t-2*dt),Gy(t-2*dt)]; 
+[g1,g1x,g1y] = [G(t-dt),Gx(t-dt),Gy(t-dt)];      
+[g2,g2x,g2y] = [G(t),Gx(t),Gy(t)]; 
+int nfinal;
+real errfinal=0.0;
+real epsfinal = 1e-7 ;
+real DBC=0.;
+Vh [u,ux,uy],[v,vx,vy],[phi,phix,phiy],[q,qx,qy];
+Vh [uh0,uh0x,uh0y]=[DBC,DBC,DBC],[vh0,vh0x,vh0y]=[DBC,DBC,DBC];
+Vh [uu,uux,uuy]=[u1,u1x,u1y],[vv,vvx,vvy]=[v1,v1x,v1y];
+    for (nfinal = 0; nfinal < 15; nfinal++){
+solve  BHE([u,ux,uy,v,vx,vy],[phi,phix,phiy,q,qx,qy]) =
+           int2d(Th)((1./dt^2)*(u*phi)+(0.25)*bilaplacian(u,phi)
+           -1./16*vkm(uu,phi)*v-1./16*vkm(u,phi)*vv-1./8*vkm(u1,phi)*v-1./16*vkm(u0,phi)*v -1./8*vkm(u,phi)*v1-1./16*vkm(u,phi)*v0)
+           +int2d(Th)((0.25)*bilaplacian(u0,phi)+(0.5)*bilaplacian(u1,phi)-1./4*vkm(u1,phi)*v1-1./8*vkm(u0,phi)*v1
+           -1./16*vkm(u0,phi)*v0-1./16*vkm(u1,phi)*(v0)-(2.0/dt^2)*(u1*phi)+(1./dt^2)*(u0*phi)-(0.25)*(f0*phi)-(0.5)*(f1*phi)-(0.25)*(f2*phi))
+           +int2d(Th)((0.5)*bilaplacian(v,q)+1./4*vkm(uu,u)*q+1./4*vkm(u,u1)*q) +int2d(Th)((0.5)*bilaplacian(v1,q)+1./8*vkm(u1,u1)*q-(0.5)*(g1*q)-(0.5)*(g2*q)) 
+          + on(1,2,3,4,u=0,ux=0,uy=0,v=0,vx=0,vy=0);
+
+errfinal = sqrt(int2d(Th)((u-uu)^2+dt^2/4*((dxx(u)-dxx(uu))^2+(dyy(u)-dyy(uu))^2+2*(dxy(u)-dxy(uu))^2+(dxx(v)-dxx(vv))^2+(dyy(v)-dyy(vv))^2+2*(dxy(v)-dxy(vv))^2)));
+
+     cout <<" Newton_Steps no. = "  << nfinal << " err = " << errfinal<< endl;
+     
+ if(errfinal < epsfinal) break; //converge
+  ////   if( nfinal>3 && errfinal > 10.) break; //blowup
+       
+        [uu,uux,uuy]=[u,ux,uy];
+        [vv,vvx,vvy]=[v,vx,vy];
+        [unum,unumx,unumy]=[u,ux,uy];
+        [vnum,vnumx,vnumy]=[v,vx,vy];
+         }
+
+real error0=sqrt(int2d(Th)((ue(t)-unum)^2));
+real error2= sqrt(int2d(Th)((0.5*(uexx(t)+uexx(t-dt))-0.5*(dxx(unum)+dxx(u1)))^2+(0.5*(ueyy(t)+ueyy(t-dt))-0.5*(dyy(unum)+dyy(u1)))^2+ 2.0*(0.5*(uexy(t)+uexy(t-dt))-0.5*(dxy(unum)+dxy(u1)))^2 ));
+
+real errorv0=sqrt(int2d(Th)((ve(t)-vnum)^2));
+real errorv2=sqrt(int2d(Th)((0.5*(vexx(t)+vexx(t-dt))-0.5*(dxx(vnum)+dxx(v1)))^2+(0.5*(veyy(t)+veyy(t-dt))-0.5*(dyy(vnum)+dyy(v1)))^2+ 2.0*(0.5*(vexy(t)+vexy(t-dt))-0.5*(dxy(vnum)+dxy(v1)))^2 ));
+//sqrt(int2d(Th)(((vexx(t))-(dxx(vnum)))^2+((veyy(t))-(dyy(vnum)))^2+ 2.0*((vexy(t))-(dxy(vnum)))^2 ));
+//sqrt(int2d(Th)((0.5*(vexx(t)+vexx(t-dt))-0.5*(dxx(vnum)+dxx(v1)))^2+(0.5*(veyy(t)+veyy(t-dt))-0.5*(dyy(vnum)+dyy(v1)))^2+ 2.0*(0.5*(vexy(t)+vexy(t-dt))-0.5*(dxy(vnum)+dxy(v1)))^2 ));
+
+[u0,u0x,u0y]=[u1,u1x,u1y];
+[u1,u1x,u1y]= [unum,unumx,unumy];
+[v0,v0x,v0y]=[v1,v1x,v1y];
+[v1,v1x,v1y]= [vnum,vnumx,vnumy];
+
+//real error0=sqrt(int2d(Th)((ue(t)-unum)^2));
+//real error2= sqrt(int2d(Th)((0.5*(uexx(t)+uexx(t-dt))-0.5*(dxx(unum)+dxx(u1)))^2+(0.5*(ueyy(t)+ueyy(t-dt))-0.5*(dyy(unum)+dyy(u1)))^2+ 2.0*(0.5*(uexy(t)+uexy(t-dt))-0.5*(dxy(unum)+dxy(u1)))^2 ));
+//real errorv0=sqrt(int2d(Th)((ve(t)-vnum)^2));
+//real errorv2=sqrt(int2d(Th)((0.5*(vexx(t)+vexx(t-dt))-0.5*(dxx(vnum)+dxx(v1)))^2+(0.5*(veyy(t)+veyy(t-dt))-0.5*(dyy(vnum)+dyy(v1)))^2+ 2.0*(0.5*(vexy(t)+vexy(t-dt))-0.5*(dxy(vnum)+dxy(v1)))^2 ));
+E0=max(E0,error0);
+E2=max(E2,error2);
+Ev0=max(Ev0,errorv0);
+Ev2=max(Ev2,errorv2);
+
+                       
+}
+Vh [uexact,uexactx,uexacty]; [uexact,uexactx,uexacty]=[ue(t),uex(t),uey(t)];  
+Vh [vexact,vexactx,vexacty]; [vexact,vexactx,vexacty]=[ve(t),vex(t),vey(t)]; 
+
+plot(uexact,cmm="Exact Soln",fill=true, value=true, wait=true,dim=3);
+plot(unum,cmm="Numer. Soln",fill=true, value=true, wait=true, dim=3);
+plot(vexact,cmm="Exact Soln..v",fill=true, value=true, wait=true,dim=3);
+plot(vnum,cmm="Numer. Soln...v",fill=true, value=true, wait=true, dim=3);
+
+l2error[j]=E0;
+Energyerror[j]=E2;
+l2errorv[j]=Ev0;
+Energyerrorv[j]=Ev2;
+hh[j]=sqrt(2)*1./M;//sqrt(2)*1./M;
+
+}
+for(int i=0;i<p;i++){ 
+      cout<<"========================================="<<endl;      
+      cout<<"Errors at i th level = "<<i<<endl;
+      cout<<" L2 Error u:= "<<l2error[i]<<endl;
+      cout<<" Energy Error u:=  "<<Energyerror[i]<<endl;
+      cout<<" L2 Error v:= "<<l2errorv[i]<<endl;
+      cout<<" Energy Error v:=  "<<Energyerrorv[i]<<endl;
+}
+for(int i=1;i<p;i++){
+
+      l2order[i]=log(l2error[i-1]/l2error[i])/log(2.0);
+      Energyorder[i]=log(Energyerror[i-1]/Energyerror[i])/log(2.0);
+      l2orderv[i]=log(l2errorv[i-1]/l2errorv[i])/log(2.0);
+      Energyorderv[i]=log(Energyerrorv[i-1]/Energyerrorv[i])/log(2.0);
+
+ }
+// ******** Generating error history **** //
+cout << "==================================================================================================================" << endl;
+cout << "   $h$  &  Eu(0)   &  Ru(0) &   Eu(2)   &  Ru(2) &  Ev(0)   &  Rv(0) &   Ev(2)   &  Rv(2) " << endl;
+cout << "==================================================================================================================" << endl;
+
+for(int nk = 0; nk <p; nk++) {
+    if(nk==0){
+    cout.precision(3);
+    cout.fixed;
+    cout << hh[nk] << " & ";
+
+    cout.precision(2);
+    cout.scientific;
+    cout << l2error[nk] << " & ";
+    cout << "-----" << " & ";
+    cout.precision(2);
+    cout.scientific;
+    cout << Energyerror[nk] << " & ";
+    cout << "-----"<< " & ";
+    cout.precision(2);
+    cout.scientific;
+    cout << l2errorv[nk] << " & ";
+    cout << "-----" << " & ";
+    cout.precision(2);
+    cout.scientific;
+    cout << Energyerrorv[nk] << " & ";
+    cout <<" -----"<< endl;
+
+    }
+
+else {
+   cout.precision(3);
+    cout.fixed;
+    cout << hh[nk] << " & ";
+
+    cout.precision(2);
+    cout.scientific;
+    cout << l2error[nk] << " & ";
+
+    cout.precision(3);                                                                                                                                                                                                                                                                                              cout.fixed;                                                                                                                                                                                                                                                                                                     cout << l2order[nk] << " & ";                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   cout.precision(2);                                                                                                                                                                                                                                                                                              cout.scientific;                                                                                                                                                                                                                                                                                                cout << Energyerror[nk] << " & ";                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               cout.precision(3);                                                                                                                                                                                                                                                                                              cout.fixed;                                                                                                                                                                                                                                                                                                     cout << Energyorder[nk] << " & ";                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               cout.precision(2);                                                                                                                                                                                                                                                                                              cout.scientific;                                                                                                                                                                                                                                                                                                cout << l2errorv[nk] << " & ";                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  cout.precision(3);                                                                                                                                                                                                                                                                                              cout.fixed;                                                                                                                                                                                                                                                                                                     cout << l2orderv[nk] << " & ";                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  cout.precision(2);                                                                                                                                                                                                                                                                                              cout.scientific;                                                                                                                                                                                                                                                                                                cout << Energyerrorv[nk] << " & ";                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              cout.precision(3);                                                                                                                                                                                                                                                                                              cout.fixed;                                                                                                                                                                                                                                                                                                     cout << Energyorderv[nk] << endl;                                                                                                                                                }}
